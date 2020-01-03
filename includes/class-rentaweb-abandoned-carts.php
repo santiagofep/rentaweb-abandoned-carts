@@ -59,6 +59,12 @@ class RentawebAbandonedCart
         $options = get_option('rentaweb_abandoned_cart_data');
         $cart = WC()->cart;
         $items = $cart->get_cart_contents();
+        $names = array();
+
+        foreach ($items as $hash => $item) {
+            $names[$item['product_id']] = $item['data']->get_name();
+        }
+
         $data = array(
             'secret' => $options['secret'],
             'items' => $items,
@@ -66,6 +72,7 @@ class RentawebAbandonedCart
                 'email' => $_POST['email'],
                 'phone' => $_POST['phone'],
             ),
+            'names' => $names,
             'cart' => $rentaweb_cart,
         );
         $json = json_encode($data);
@@ -83,8 +90,6 @@ class RentawebAbandonedCart
         }
 
         $response = wp_remote_post($url . $options['id'] . '/', $args);
-
-        print_r($cart->get_cart_hash());
 
         wp_die();
     }
